@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Prediction</title>
+</head>
+
+<body>
+    <h1>Predict Company Status</h1>
+    <form action="{{ url_for('predict') }}" method="POST">
+        <label for="investment_time_days">Investment Time Days:</label>
+        <input type="text" id="investment_time_days" name="investment_time_days" required><br>
+
+        <label for="funding_per_milestone">Funding per Milestone:</label>
+        <input type="text" id="funding_per_milestone" name="funding_per_milestone" required><br>
+
+        <label for="investment_rounds_per_year">Investment Rounds per Year:</label>
+        <input type="text" id="investment_rounds_per_year" name="investment_rounds_per_year" required><br>
+
+        <label for="funding_total_usd">Funding Total USD:</label>
+        <input type="text" id="funding_total_usd" name="funding_total_usd" required><br><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if prediction %}
+    <h2>Prediction Result: {{ prediction }}</h2>
+    {% endif %}
+</body>
+
+</html>
