@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for
-import pickle
+import joblib
 import numpy as np
+from datetime import datetime
 from custom_transformers import BinaryClassifierTransformer
-
 
 app = Flask(__name__)
 
 # Load the model (make sure this path is correct)
-with open('../flask-app/final_pipeline_model.pkl', 'rb') as f:
-    model = pickle.load(f)
+with open('final_pipeline.pkl', 'rb') as f:
+    model = joblib.load(f)
 
 @app.route('/')
 def index():
@@ -16,19 +16,21 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Get data from form
-    investment_time_days = float(request.form['investment_time_days'])
-    funding_per_milestone = float(request.form['funding_per_milestone'])
-    investment_rounds_per_year = float(request.form['investment_rounds_per_year'])
+    # Retrieve data from the form
+    founded_at = float(request.form['founded_at'])
+    funding_rounds = float(request.form['funding_rounds'])
     funding_total_usd = float(request.form['funding_total_usd'])
-
-    # Prepare the input data as a numpy array (1 row, 4 features)
-    input_data = np.array([[investment_time_days, funding_per_milestone, investment_rounds_per_year, funding_total_usd]])
+    milestones = float(request.form['milestones'])
+    relationships = float(request.form['relationships'])
+    
+  
+    # Prepare the input data for the model
+    input_data = np.array([[founded_at, funding_rounds, funding_total_usd, milestones, relationships]])
 
     # Make prediction using the model
     prediction = model.predict(input_data)[0]
 
-    # Render result in the same page
+    # Render the result in the same page
     return render_template('index.html', prediction=prediction)
 
 if __name__ == '__main__':
