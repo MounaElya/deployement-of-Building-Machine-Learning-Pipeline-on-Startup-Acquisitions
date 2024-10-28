@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import joblib
 import numpy as np
-from datetime import datetime
-from custom_transformers import BinaryClassifierTransformer
+import os
 
 app = Flask(__name__)
 
-# Load the model (make sure this path is correct)
-with open('final_pipeline.pkl', 'rb') as f:
+# Get the model path from an environment variable
+model_path = os.getenv("MODEL_PATH", "final_pipeline.pkl")  # Replace with default model path
+
+# Load the model
+with open(model_path, 'rb') as f:
     model = joblib.load(f)
 
 @app.route('/')
@@ -23,7 +25,6 @@ def predict():
     milestones = float(request.form['milestones'])
     relationships = float(request.form['relationships'])
     
-  
     # Prepare the input data for the model
     input_data = np.array([[founded_at, funding_rounds, funding_total_usd, milestones, relationships]])
 
