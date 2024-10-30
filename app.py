@@ -22,6 +22,7 @@ def index():
     return render_template('index.html')
 
 
+import pandas as pd
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -32,21 +33,19 @@ def predict():
     milestones = float(request.form['milestones'])
     relationships = float(request.form['relationships'])
     
-    # Arrange the features into an array for prediction
-    X = np.array([[founded_at, funding_rounds, funding_total_usd, milestones, relationships]])
+    # Arrange the features into a DataFrame for prediction
+    X = pd.DataFrame([[founded_at, funding_rounds, funding_total_usd, milestones, relationships]], 
+                     columns=['founded_at', 'funding_rounds', 'funding_total_usd', 'milestones', 'relationships'])
 
     # Step 1: Transform the input features to get the binary classification probability added as a feature
     X_with_prob = binary_pipeline.transform(X)
-    
-    # Convert X_with_prob to a DataFrame with the correct column names
-    column_names = ['founded_at', 'funding_rounds', 'funding_total_usd', 'milestones', 'relationships', 'binary_prob']
-    X_with_prob_df = pd.DataFrame(X_with_prob, columns=column_names)
 
     # Step 2: Use the multiclass pipeline to make the final prediction
-    multiclass_pred = multiclass_pipeline.predict(X_with_prob_df)
+    multiclass_pred = multiclass_pipeline.predict(X_with_prob)
     
     # Render the prediction result page
     return render_template('result.html', prediction=int(multiclass_pred[0]))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
